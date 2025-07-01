@@ -108,7 +108,7 @@ import BondInputForm from './BondInputForm.vue';
 import CashFlowTable from './CashFlowTable.vue';
 import CashFlowChart from './CashFlowChart.vue';
 import BondSummary from './BondSummary.vue';
-import {calculateBondCashFlow, calculateBondPrice} from '../lib/BondCalculations.js';
+import {calculateBondCashFlow, calculateBondPrice, calcularTIR, calcularVAN, calcularTREA} from '../lib/BondCalculations.js';
 import { CalculatorService } from '../services/calculator.services.js';
 import { useAuthenticationStore } from '../../IAM/services/authentication.store.js';
 
@@ -198,6 +198,12 @@ const loadUserBonds = async () => {
           const flows = calculateBondCashFlow(bondForCalculation);
           cashFlows.value = flows;
           console.log('💰 Flujos de caja calculados:', flows);
+
+          // Calcular TIR, VAN y TREA desde el frontend
+          const tir = calcularTIR(flows);
+          const van = bondForCalculation.discountRate ? calcularVAN(flows, bondForCalculation.discountRate / 100) : null;
+          const trea = calcularTREA(tir, bondForCalculation.paymentFrequency);
+          bond.value = { ...bondForCalculation, tir, van, trea };
 
           // Obtener datos adicionales de cashflow desde el backend
           try {

@@ -42,6 +42,41 @@
           <p class="font-medium text-gray-900 dark:text-white">{{ bond.discountRate ? `${bond.discountRate}%` : 'N/A' }}</p>
         </div>
       </div>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow flex flex-col items-center justify-center">
+          <p class="text-gray-500 dark:text-gray-400 mb-1">TREA</p>
+          <p class="font-bold text-xl text-primary-700 dark:text-primary-300">
+            {{
+              bond.trea !== undefined && bond.trea !== null &&
+              isFinite(bond.trea) && bond.trea > -1 && bond.trea < 10
+                ? (bond.trea * 100).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %'
+                : 'N/A'
+            }}
+          </p>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow flex flex-col items-center justify-center">
+          <p class="text-gray-500 dark:text-gray-400 mb-1">TIR</p>
+          <p class="font-bold text-xl text-primary-700 dark:text-primary-300">
+            {{
+              bond.tir !== undefined && bond.tir !== null &&
+              isFinite(bond.tir) && bond.tir > -1 && bond.tir < 10
+                ? (bond.tir * 100).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' %'
+                : 'N/A'
+            }}
+          </p>
+        </div>
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow flex flex-col items-center justify-center">
+          <p class="text-gray-500 dark:text-gray-400 mb-1">VAN</p>
+          <p class="font-bold text-xl text-primary-700 dark:text-primary-300">
+            {{
+              bond.van !== undefined && bond.van !== null &&
+              isFinite(bond.van)
+                ? formatCurrency(bond.van, bond.currency)
+                : 'N/A'
+            }}
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
