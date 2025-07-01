@@ -84,32 +84,29 @@ const handleBondSubmit = async (bondData) => {
     bondPrice.value = null;
   }
 
-  // Mapear paymentFrequency a los valores esperados por el backend
-  const paymentFrequencyMap = {
-    'monthly': 'MENSUAL',
-    'quarterly': 'TRIMESTRAL',
-    'semi-annual': 'SEMESTRAL',
-    'annual': 'ANUAL'
-  };
-
-  const bondDataToSend = {
-    ...bondData,
-    termUnit: bondData.termUnit ? bondData.termUnit.toUpperCase() : undefined,
-    paymentFrequency: paymentFrequencyMap[bondData.paymentFrequency] || bondData.paymentFrequency
-  };
-
   // Guardar bono en backend asociado al usuario autenticado
   if (authStore.isSignedIn) {
     try {
-      // Enviar solo los datos del bono, sin userId
-      await calculatorService.createBond(bondDataToSend);
+      // Debug: verificar datos que se envían
+      console.log('Datos que se envían al backend:', bondData);
+      console.log('Token JWT:', localStorage.getItem('token'));
+      console.log('Usuario autenticado:', authStore.id);
+
+      // El mapeo ya se hace en BondInputForm.vue, usar bondData directamente
+      const response = await calculatorService.createBond(bondData);
+      console.log('Respuesta del backend:', response);
       // Opcional: mostrar mensaje de éxito
       // alert('Bono guardado correctamente');
     } catch (error) {
-      // Opcional: mostrar mensaje de error
+      // Mostrar detalles del error
+      console.error('Error completo:', error);
+      console.error('Response data:', error.response?.data);
+      console.error('Response status:', error.response?.status);
+      console.error('Response headers:', error.response?.headers);
       // alert('Error al guardar el bono');
-      console.error('Error al guardar el bono:', error);
     }
+  } else {
+    console.log('Usuario no autenticado, no se enviará al backend');
   }
 };
 
