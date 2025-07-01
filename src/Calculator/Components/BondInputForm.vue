@@ -261,6 +261,19 @@
           </div>
         </div>
       </div>
+
+      <div>
+        <label for="additionalCosts" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Costos Adicionales</label>
+        <input
+            id="additionalCosts"
+            v-model.number="formData.additionalCosts"
+            type="number"
+            step="0.01"
+            class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+            placeholder="0"
+        />
+        <p v-if="errors.additionalCosts" class="mt-1 text-sm text-red-600">{{ errors.additionalCosts }}</p>
+      </div>
     </div>
 
     <button
@@ -285,6 +298,7 @@ const openSections = reactive({
 
 const formData = reactive({
   bondName: '',
+  additionalCosts: 0,
   nominalValue: 1000,
   currency: 'USD',
   term: 5,
