@@ -86,7 +86,7 @@ const handleBondSubmit = async (bondData) => {
 
   // Mapear paymentFrequency a los valores esperados por el backend
   const paymentFrequencyMap = {
-    'monthly': 'MENSUAL',
+    'MENSUAL': 'MENSUAL',
     'quarterly': 'TRIMESTRAL',
     'semi-annual': 'SEMESTRAL',
     'annual': 'ANUAL'

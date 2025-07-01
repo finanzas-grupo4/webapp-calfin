@@ -130,7 +130,7 @@
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 required
             >
-              <option value="monthly">Mensual</option>
+              <option value="MENSUAL">Mensual</option>
               <option value="quarterly">Trimestral</option>
               <option value="semi-annual">Semestral</option>
               <option value="annual">Anual</option>
@@ -146,7 +146,7 @@
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 required
             >
-              <option value="monthly">Mensual</option>
+              <option value="MENSUAL">Mensual</option>
               <option value="quarterly">Trimestral</option>
               <option value="semi-annual">Semestral</option>
               <option value="annual">Anual</option>
@@ -209,7 +209,7 @@
                   required
               >
                 <option value="total">Total (Principal e Interés)</option>
-                <option value="partial">Parcial (Solo Principal)</option>
+                <option value="PARCIAL">Parcial (Solo Principal)</option>
               </select>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 {{ formData.gracePeriodType === 'total' ? 'Sin pagos durante el periodo de gracia' : 'Solo pagos de intereses durante el periodo de gracia' }}
@@ -333,7 +333,7 @@ const handleGracePeriodChange = () => {
     formData.gracePeriodType = 'none';
     formData.gracePeriodLength = 0;
   } else {
-    formData.gracePeriodType = 'partial';
+    formData.gracePeriodType = 'PARCIAL';
   }
 };
 

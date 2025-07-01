@@ -3,7 +3,7 @@ import { addMonths } from "date-fns"
 // Helper function to get the number of payments per year
 function getPaymentsPerYear(frequency) {
     switch (frequency) {
-        case "monthly":
+        case "MENSUAL":
             return 12
         case "quarterly":
             return 4
@@ -20,7 +20,7 @@ function getPaymentsPerYear(frequency) {
 function getCompoundingFactor(frequency) {
     if (!frequency) return 1
     switch (frequency) {
-        case "monthly":
+        case "MENSUAL":
             return 12
         case "quarterly":
             return 4

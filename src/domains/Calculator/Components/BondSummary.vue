@@ -66,7 +66,7 @@ const formatDate = (date) => {
 
 const getPaymentFrequencyText = (freq) => {
   switch (freq) {
-    case 'monthly':
+    case 'MENSUAL':
       return 'Mensual';
     case 'quarterly':
       return 'Trimestral';
@@ -82,7 +82,7 @@ const getPaymentFrequencyText = (freq) => {
 const getCompoundingText = (freq) => {
   if (!freq) return 'N/A';
   switch (freq) {
-    case 'monthly':
+    case 'MENSUAL':
       return 'Mensual';
     case 'quarterly':
       return 'Trimestral';
