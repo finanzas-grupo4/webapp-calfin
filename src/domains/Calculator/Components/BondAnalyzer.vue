@@ -212,14 +212,10 @@ const loadUserBonds = async () => {
                 const backendData = backendCashflows[index] || {};
                 return {
                   ...flow,
-                  // Agregar los 3 datos adicionales del backend
-                  backendData1: backendData.data1 || backendData.additionalData1 || 0,
-                  backendData2: backendData.data2 || backendData.additionalData2 || 0,
-                  backendData3: backendData.data3 || backendData.additionalData3 || 0,
-                  // Puedes agregar más campos según la estructura real del backend
-                  tir: backendData.tir || 0,
-                  van: backendData.van || 0,
-                  yield: backendData.yield || 0
+                  // Mapear correctamente los campos del backend
+                  trea: backendData.trea ?? backendData.TREA ?? backendData.tir ?? 0,
+                  tir: backendData.tir ?? backendData.TIR ?? 0,
+                  van: backendData.van ?? backendData.VAN ?? 0
                 };
               });
               console.log('💰 Flujos de caja combinados con datos del backend:', cashFlows.value);
