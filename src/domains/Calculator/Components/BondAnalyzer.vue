@@ -55,19 +55,25 @@
 
 
 <script setup>
-import {ref} from 'vue';
+import {ref, onMounted} from 'vue';
 import BondInputForm from './BondInputForm.vue';
 import CashFlowTable from './CashFlowTable.vue';
 import CashFlowChart from './CashFlowChart.vue';
 import BondSummary from './BondSummary.vue';
 import {calculateBondCashFlow, calculateBondPrice} from '../lib/BondCalculations.js';
+import { CalculatorService } from '../services/calculator.services.js';
+import { useAuthenticationStore } from '../../IAM/services/authentication.store.js';
 
 const bond = ref(null);
 const cashFlows = ref([]);
 const bondPrice = ref(null);
 const activeTab = ref('table');
+const bonds = ref([]);
 
-const handleBondSubmit = (bondData) => {
+const calculatorService = new CalculatorService();
+const authStore = useAuthenticationStore();
+
+const handleBondSubmit = async (bondData) => {
   bond.value = bondData;
   const flows = calculateBondCashFlow(bondData);
   cashFlows.value = flows;
@@ -77,5 +83,56 @@ const handleBondSubmit = (bondData) => {
   } else {
     bondPrice.value = null;
   }
+
+  // Mapear paymentFrequency a los valores esperados por el backend
+  const paymentFrequencyMap = {
+    'monthly': 'MENSUAL',
+    'quarterly': 'TRIMESTRAL',
+    'semi-annual': 'SEMESTRAL',
+    'annual': 'ANUAL'
+  };
+
+  const bondDataToSend = {
+    ...bondData,
+    termUnit: bondData.termUnit ? bondData.termUnit.toUpperCase() : undefined,
+    paymentFrequency: paymentFrequencyMap[bondData.paymentFrequency] || bondData.paymentFrequency
+  };
+
+  // Guardar bono en backend asociado al usuario autenticado
+  if (authStore.isSignedIn) {
+    try {
+      // Enviar solo los datos del bono, sin userId
+      await calculatorService.createBond(bondDataToSend);
+      // Opcional: mostrar mensaje de éxito
+      // alert('Bono guardado correctamente');
+    } catch (error) {
+      // Opcional: mostrar mensaje de error
+      // alert('Error al guardar el bono');
+      console.error('Error al guardar el bono:', error);
+    }
+  }
 };
+
+onMounted(async () => {
+  if (authStore.isSignedIn && authStore.id) {
+    try {
+      const response = await calculatorService.getBondsByUser(authStore.id);
+      bonds.value = response.data;
+      if (bonds.value && bonds.value.length > 0) {
+        // Selecciona el bono más reciente (último)
+        const lastBond = bonds.value[bonds.value.length - 1];
+        bond.value = lastBond;
+        const flows = calculateBondCashFlow(lastBond);
+        cashFlows.value = flows;
+        if (lastBond.discountRate) {
+          bondPrice.value = calculateBondPrice(flows, lastBond.discountRate);
+        } else {
+          bondPrice.value = null;
+        }
+      }
+    } catch (error) {
+      console.error('Error al obtener los bonos:', error);
+    }
+  }
+});
 </script>
