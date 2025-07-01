@@ -88,6 +88,7 @@ onMounted(() => {
 
 :global(.dark) .video-overlay {
   background: rgba(17, 24, 39, 0.3);
+
 }
 
 main {

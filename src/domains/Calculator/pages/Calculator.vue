@@ -1,5 +1,10 @@
+# Solución para evitar superposición del navbar en Calculator.vue
+
+Considerando que estás utilizando Tailwind CSS en Calculator.vue y tienes un video de fondo, aquí tienes la solución completa para copiar y pegar:
+
+```vue
 <template>
-  <!-- solo estetico lo peuden quitar si molesta gaaaaaaaaaaaaaaa -->
+  <!-- Video de fondo -->
   <div class="video-background">
     <video autoplay muted loop playsinline>
       <source src="https://st3.depositphotos.com/2218438/18033/v/600/depositphotos_180339756-stock-video-blue-digital-animation-stock-market.mp4" type="video/mp4">
@@ -7,16 +12,11 @@
     <div class="video-overlay"></div>
   </div>
 
-  <main class="min-h-screen bg-gray-50 dark:bg-gray-900 bg-opacity-80 dark:bg-opacity-80 relative z-10">
+
+  <main class="min-h-screen bg-gray-50 dark:bg-gray-900 bg-opacity-80 dark:bg-opacity-80 relative z-10 pt-[60px]">
     <div class="container mx-auto py-8 px-4">
       <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Analizador de flujo de caja de bonos corporativos</h1>
-        <button
-            @click="toggleDarkMode"
-            class="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
-        >
-          {{ isDarkMode ? 'Modo Claro' : 'Modo Oscuro' }}
-        </button>
       </div>
       <BondAnalyzer />
     </div>
@@ -24,32 +24,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
 import BondAnalyzer from '../Components/BondAnalyzer.vue';
-
-const isDarkMode = ref(false);
-
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value;
-  if (isDarkMode.value) {
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('darkMode', 'true');
-  } else {
-    document.documentElement.classList.remove('dark');
-    localStorage.setItem('darkMode', 'false');
-  }
-};
-
-onMounted(() => {
-  const savedMode = localStorage.getItem('darkMode');
-  if (savedMode === 'true') {
-    isDarkMode.value = true;
-    document.documentElement.classList.add('dark');
-  } else {
-    isDarkMode.value = false;
-    document.documentElement.classList.remove('dark');
-  }
-});
 </script>
 
 <style scoped>
@@ -86,5 +61,9 @@ main {
   position: relative;
   z-index: 1;
   background-color: transparent !important;
+  margin-top: 0; /* Elimina el margen si existiera y usa padding en su lugar */
 }
 </style>
+```
+
+Si necesitas ajustar la altura del padding, cambia el valor `pt-[60px]` por el que corresponda a la altura de tu navbar.

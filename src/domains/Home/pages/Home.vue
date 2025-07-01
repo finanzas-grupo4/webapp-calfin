@@ -1,7 +1,6 @@
 <template>
   <div class="home-container">
-    <h1>Inicio</h1>
-    <hr />
+
     <div class="button-container">
       <button @click="goToCalculator('emisor')">EMISOR DE BONO</button>
       <button @click="goToCalculator('inversor')">INVERSOR Y BONISTA</button>
@@ -21,7 +20,7 @@ const goToCalculator = (role) => {
 <style scoped>
 .home-container {
   text-align: center;
-  margin-top: 50px;
+  margin-top: 100px;
 }
 
 hr {
@@ -49,5 +48,9 @@ button {
 
 button:hover {
   background-color: #85b9c4;
+}
+
+.page-container {
+  margin-top: 60px; /* Ajusta según la altura de tu navbar */
 }
 </style>

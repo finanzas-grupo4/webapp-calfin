@@ -20,6 +20,33 @@ const signOut = () => {
     authStore.signOut(router);
   }
 };
+
+
+// Lógica de Dark Mode
+const isDarkMode = ref(false);
+
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value;
+  if (isDarkMode.value) {
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('darkMode', 'true');
+  } else {
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('darkMode', 'false');
+  }
+};
+
+onMounted(() => {
+  const savedMode = localStorage.getItem('darkMode');
+  if (savedMode === 'true') {
+    isDarkMode.value = true;
+    document.documentElement.classList.add('dark');
+  } else {
+    isDarkMode.value = false;
+    document.documentElement.classList.remove('dark');
+  }
+});
+
 </script>
 
 <template>
@@ -35,6 +62,20 @@ const signOut = () => {
             <font-awesome-icon icon="home" />
             <span>Inicio</span>
           </router-link>
+        </div>
+
+        <!-- Espacio flexible que empuja los elementos a la derecha -->
+        <div class="flex-spacer"></div>
+
+        <!-- Toggle Switch para Dark Mode -->
+        <div class="nav-item dark-mode-toggle">
+          <span class="mode-label">{{ isDarkMode ? 'Oscuro' : 'Claro' }}</span>
+          <label class="switch">
+            <input type="checkbox" @change="toggleDarkMode" :checked="isDarkMode">
+            <span class="slider round">
+              <font-awesome-icon :icon="isDarkMode ? 'moon' : 'sun'" class="toggle-icon" />
+            </span>
+          </label>
         </div>
 
         <div class="nav-item sign-out" @click="closeMobileMenu">
@@ -75,6 +116,10 @@ const signOut = () => {
   width: 100%;
 }
 
+.flex-spacer {
+  flex-grow: 1;
+}
+
 .nav-item a {
   display: flex;
   align-items: center;
@@ -89,11 +134,15 @@ const signOut = () => {
   color: #A88662;
 }
 
-.nav-item.sign-out {
-  margin-left: auto !important;
+.nav-item.dark-mode {
+  margin-left: auto;
 }
 
-.sign-out a {
+.nav-item.dark-mode a {
+  color: #ffd700;
+}
+
+.nav-item.sign-out a {
   color: #ff6b6b;
 }
 
@@ -106,6 +155,11 @@ const signOut = () => {
 
 span {
   margin-left: 5px;
+}
+
+:root.dark {
+  --bg-color: #121212;
+  --text-color: #f5f5f5;
 }
 
 @media (max-width: 768px) {
@@ -149,10 +203,106 @@ span {
     display: block;
   }
 
+  .flex-spacer {
+    display: none;
+  }
+
+  .nav-item.dark-mode {
+    margin-left: 0;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 10px;
+  }
+
   .nav-item.sign-out {
-    margin-top: 15px;
+    margin-top: 5px;
     padding-top: 10px;
     border-top: 1px solid rgba(255,255,255,0.2);
+  }
+}
+
+/* Estilos para el toggle switch */
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+  margin-right: 5px;
+}
+
+.mode-label {
+  color: white;
+  margin-right: 8px;
+  font-size: 0.9rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #A88662;
+  transition: .4s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  z-index: 2;
+}
+
+input:checked + .slider {
+  background-color: #333;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.toggle-icon {
+  color: white;
+  font-size: 12px;
+  z-index: 1;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+  .dark-mode-toggle {
+    margin-left: 0;
+    justify-content: space-between;
+    width: 100%;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 10px;
   }
 }
 </style>
