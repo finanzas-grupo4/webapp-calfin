@@ -83,7 +83,6 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.3);
 }
 
 :global(.dark) .video-overlay {
@@ -95,5 +94,33 @@ main {
   position: relative;
   z-index: 1;
   background-color: transparent !important;
+}
+
+
+</style>
+
+<style>
+:root {
+  --bg-color: #ffffff;
+}
+
+:root.dark {
+  --bg-color: #ffffff; /* Mantiene el fondo blanco incluso en modo oscuro */
+}
+
+body, html {
+  background-color: #ffffff !important;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  background-color: #ffffff;
+}
+
+/* Preserva el modo oscuro solo para componentes específicos */
+:root.dark .header-nav,
+:root.dark .nav-items {
+  background-color: #16444E;
 }
 </style>

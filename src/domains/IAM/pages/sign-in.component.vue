@@ -38,6 +38,7 @@ export default {
   <div class="container">
     <div class="login">
       <h2 class="title">Bienvenido de vuelta!</h2>
+      <img src="@/assets/calfin.png" alt="Logo de Calfin" class="logo-image">
     </div>
     <form @submit.prevent="onSignIn">
       <div class="p-fluid">
@@ -87,9 +88,10 @@ export default {
   margin-bottom: 1.5rem;
 }
 
-.login img {
+.logo-image {
   max-width: 150px;
-  margin-bottom: 1rem;
+  margin: 1rem 0;
+  display: block;
 }
 .title {
   color: #16444E;
@@ -110,16 +112,16 @@ export default {
 :deep(.p-inputtext) {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #A88662;
+  border: 1px solid #16444E;
   border-radius: 1rem;
-  background-color: #faf6f2;
+  background-color: #ffffff;
   color: #333;
   transition: all 0.3s;
 }
 
 :deep(.p-inputtext:focus) {
-  border-color: #765532;
-  box-shadow: 0 0 0 2px rgba(118, 85, 50, 0.2);
+  border-color: #16444E;
+  box-shadow: 0 0 0 2px rgba(22, 68, 78, 0.2);
 }
 
 :deep(.p-inputtext.p-invalid) {
@@ -127,7 +129,7 @@ export default {
 }
 
 :deep(label) {
-  color: #765532;
+  color: #16444E;
 }
 
 .p-invalid {
@@ -153,7 +155,7 @@ export default {
 }
 
 .route-to-registration {
-  color: #765532;
+  color: #16444E;
   font-weight: 600;
   margin-left: 0.25rem;
 }
@@ -166,7 +168,7 @@ export default {
 }
 
 :deep(.btn-register) {
-  background-color: #765532;
+  background-color: #16444E;
   border: none;
   border-radius: 6rem;
   color: white;
@@ -182,12 +184,12 @@ export default {
 }
 
 :deep(.btn-register:hover) {
-  background-color: #A88662;
-  box-shadow: 0 4px 8px rgba(168, 134, 98, 0.3);
+  background-color: #1d5561;
+  box-shadow: 0 4px 8px rgba(22, 68, 78, 0.3);
 }
 
 :deep(.btn-register:focus) {
-  box-shadow: 0 0 0 2px rgba(118, 85, 50, 0.4);
+  box-shadow: 0 0 0 2px rgba(22, 68, 78, 0.4);
 }
 
 :deep(.p-toast) {
