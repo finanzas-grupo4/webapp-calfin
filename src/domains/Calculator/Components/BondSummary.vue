@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { formatCurrency } from '../lib/utils';
+import { formatCurrency } from '../lib/utils.js';
 
 const props = defineProps({
   bond: {

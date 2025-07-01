@@ -1,7 +1,7 @@
-import http from "../../shared/services/http-common.js";
+import http from "../../../shared/services/http-common.js";
 
 export class CalculatorService {
-    resourceEndpoint = '/api/v1/bonds';
+    resourceEndpoint = '/bonds';
 
     // Crear un nuevo bono
     createBond(bondResource) {

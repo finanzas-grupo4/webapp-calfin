@@ -59,7 +59,7 @@ import BondInputForm from './BondInputForm.vue';
 import CashFlowTable from './CashFlowTable.vue';
 import CashFlowChart from './CashFlowChart.vue';
 import BondSummary from './BondSummary.vue';
-import {calculateBondCashFlow, calculateBondPrice} from '../lib/BondCalculations';
+import {calculateBondCashFlow, calculateBondPrice} from '../lib/BondCalculations.js';
 
 const bond = ref(null);
 const cashFlows = ref([]);

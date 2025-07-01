@@ -10,7 +10,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { Chart, registerables } from 'chart.js';
-import { formatCurrency } from '../lib/utils';
+import { formatCurrency } from '../lib/utils.js';
 
 Chart.register(...registerables);
 
