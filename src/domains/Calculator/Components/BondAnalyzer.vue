@@ -199,6 +199,36 @@ const loadUserBonds = async () => {
           cashFlows.value = flows;
           console.log('💰 Flujos de caja calculados:', flows);
 
+          // Obtener datos adicionales de cashflow desde el backend
+          try {
+            console.log('📊 Obteniendo datos de cashflow del backend para bondId:', lastBond.id);
+            const cashflowResponse = await calculatorService.getBondCashflows(lastBond.id);
+            const backendCashflows = cashflowResponse.data;
+            console.log('📊 Datos de cashflow del backend:', backendCashflows);
+
+            // Combinar los datos calculados con los datos del backend
+            if (backendCashflows && backendCashflows.length > 0) {
+              cashFlows.value = flows.map((flow, index) => {
+                const backendData = backendCashflows[index] || {};
+                return {
+                  ...flow,
+                  // Agregar los 3 datos adicionales del backend
+                  backendData1: backendData.data1 || backendData.additionalData1 || 0,
+                  backendData2: backendData.data2 || backendData.additionalData2 || 0,
+                  backendData3: backendData.data3 || backendData.additionalData3 || 0,
+                  // Puedes agregar más campos según la estructura real del backend
+                  tir: backendData.tir || 0,
+                  van: backendData.van || 0,
+                  yield: backendData.yield || 0
+                };
+              });
+              console.log('💰 Flujos de caja combinados con datos del backend:', cashFlows.value);
+            }
+          } catch (cashflowError) {
+            console.warn('⚠️ No se pudieron obtener datos adicionales de cashflow:', cashflowError);
+            // Continuar con los datos calculados solamente
+          }
+
           // Calcular precio del bono si hay tasa de descuento
           if (bondForCalculation.discountRate) {
             bondPrice.value = calculateBondPrice(flows, bondForCalculation.discountRate);
