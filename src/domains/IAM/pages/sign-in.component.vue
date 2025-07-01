@@ -91,16 +91,8 @@ export default {
   max-width: 150px;
   margin-bottom: 1rem;
 }
-.recaptcha-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: 1.5rem 0;
-  flex-direction: column;
-  align-items: center;
-}
 .title {
-  color: #765532;
+  color: #16444E;
   font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 1rem;
