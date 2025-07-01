@@ -75,6 +75,13 @@
             </nav>
           </div>
           <div class="p-6">
+            <!-- Debug: mostrar información de los datos -->
+            <div v-if="bond" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900 rounded">
+              <p class="text-sm text-blue-700 dark:text-blue-300">
+                Debug: Bond: {{ bond.name }}, CashFlows: {{ cashFlows.length }} períodos, Moneda: {{ bond.currency }}
+              </p>
+            </div>
+
             <CashFlowTable v-if="activeTab === 'table'" :cash-flows="cashFlows" :currency="bond.currency" />
             <CashFlowChart v-else :cash-flows="cashFlows" :currency="bond.currency" />
           </div>
@@ -84,6 +91,10 @@
         <div class="text-center text-gray-500 dark:text-gray-400">
           <h3 class="text-xl font-medium mb-2">No hay datos sobre bonos</h3>
           <p>{{ bonds.length > 0 ? 'Selecciona un bono de la lista o' : 'Sin datos de bonos.' }} Introduzca los parámetros de los bonos para generar proyecciones de flujo de caja</p>
+          <!-- Debug info -->
+          <div class="mt-4 text-xs">
+            <p>Debug: Bond: {{ bond ? 'Existe' : 'Null' }}, CashFlows: {{ cashFlows.length }}, Bonds: {{ bonds.length }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -112,22 +123,54 @@ const authStore = useAuthenticationStore();
 
 // Cargar bonos del usuario al iniciar el componente
 onMounted(async () => {
+  console.log('🔍 BondAnalyzer montado');
+
+  // Debug: verificar qué hay en localStorage
+  console.log('📦 Contenido de localStorage:', {
+    token: localStorage.getItem('token'),
+    username: localStorage.getItem('username'),
+    userId: localStorage.getItem('userId')
+  });
+
+  console.log('🔐 Estado de autenticación:', {
+    isSignedIn: authStore.isSignedIn,
+    userId: authStore.id,
+    token: authStore.token,
+    authStoreState: authStore
+  });
+
+  // Si hay token pero no hay userId en el store, intentar forzar la inicialización
+  if (localStorage.getItem('token') && !authStore.id) {
+    console.log('🔄 Forzando reinicialización del authStore...');
+    authStore.initialize();
+    console.log('🔄 Estado después de reinicialización:', {
+      isSignedIn: authStore.isSignedIn,
+      userId: authStore.id
+    });
+  }
+
   await loadUserBonds();
 });
 
 // Función para cargar los bonos del usuario
 const loadUserBonds = async () => {
+  console.log('🔍 Iniciando loadUserBonds...');
+  console.log('🔐 Verificando autenticación:', {
+    isSignedIn: authStore.isSignedIn,
+    userId: authStore.id
+  });
+
   if (authStore.isSignedIn && authStore.id) {
     try {
-      console.log('Cargando bonos del usuario:', authStore.id);
+      console.log('✅ Usuario autenticado, cargando bonos del usuario:', authStore.id);
       const response = await calculatorService.getBondsByUser(authStore.id);
       bonds.value = response.data;
-      console.log('Bonos cargados desde backend:', bonds.value);
+      console.log('📊 Bonos cargados desde backend:', bonds.value);
 
       if (bonds.value && bonds.value.length > 0) {
         // Selecciona el bono más reciente (último)
         const lastBond = bonds.value[bonds.value.length - 1];
-        console.log('Último bono seleccionado (RAW):', lastBond);
+        console.log('🎯 Último bono seleccionado (RAW):', lastBond);
 
         // Verificar que el bono tiene todos los campos necesarios
         const bondForCalculation = {
@@ -146,7 +189,7 @@ const loadUserBonds = async () => {
           discountRate: parseFloat(lastBond.discountRate) || parseFloat(lastBond.discount_rate) || null
         };
 
-        console.log('Bono preparado para cálculo:', bondForCalculation);
+        console.log('⚙️ Bono preparado para cálculo:', bondForCalculation);
 
         // Asignar el bono y calcular flujos
         bond.value = bondForCalculation;
@@ -154,34 +197,41 @@ const loadUserBonds = async () => {
         try {
           const flows = calculateBondCashFlow(bondForCalculation);
           cashFlows.value = flows;
-          console.log('Flujos de caja calculados:', flows);
+          console.log('💰 Flujos de caja calculados:', flows);
 
           // Calcular precio del bono si hay tasa de descuento
           if (bondForCalculation.discountRate) {
             bondPrice.value = calculateBondPrice(flows, bondForCalculation.discountRate);
-            console.log('Precio del bono calculado:', bondPrice.value);
+            console.log('💵 Precio del bono calculado:', bondPrice.value);
           } else {
             bondPrice.value = null;
           }
         } catch (calcError) {
-          console.error('Error en el cálculo de flujos de caja:', calcError);
+          console.error('❌ Error en el cálculo de flujos de caja:', calcError);
           cashFlows.value = [];
           bondPrice.value = null;
         }
       } else {
-        console.log('No se encontraron bonos para el usuario');
+        console.log('⚠️ No se encontraron bonos para el usuario');
         // Limpiar datos si no hay bonos
         bond.value = null;
         cashFlows.value = [];
         bondPrice.value = null;
       }
     } catch (error) {
-      console.error('Error al obtener los bonos:', error);
+      console.error('❌ Error al obtener los bonos:', error);
       console.error('Response data:', error.response?.data);
       console.error('Response status:', error.response?.status);
     }
   } else {
-    console.log('Usuario no autenticado o sin ID');
+    console.log('🚫 Usuario no autenticado o sin ID');
+    console.log('📊 Estado del authStore completo:', authStore);
+
+    // Intentar recargar el estado de autenticación desde localStorage
+    if (localStorage.getItem('token')) {
+      console.log('🔄 Token encontrado en localStorage, intentando recargar estado...');
+      // Aquí podrías intentar recargar el estado de autenticación
+    }
   }
 };
 

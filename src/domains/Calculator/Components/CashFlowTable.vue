@@ -42,6 +42,11 @@ const props = defineProps({
   }
 });
 
+console.log('CashFlowTable props:', props.cashFlows, props.currency);
+
+// Usar directamente la prop cashFlows
+const { cashFlows, currency } = props;
+
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString('es-ES', {
     year: 'numeric',
