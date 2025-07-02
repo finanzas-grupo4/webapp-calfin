@@ -4,6 +4,7 @@ import Calculator from "@/domains/Calculator/pages/Calculator.vue";
 import Home from "@/domains/Home/pages/Home.vue";
 import SignIn from '@/domains/IAM/pages/sign-in.component.vue';
 import SignUp from '@/domains/IAM/pages/sign-up.component.vue';
+import AllBonds from '@/domains/PublicBonds/pages/AllBonds.vue';
 import { useAuthenticationStore } from '@/domains/IAM/services/authentication.store.js';
 
 
@@ -20,6 +21,12 @@ const routes = [
     name: 'Calculator',
     component: Calculator,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/all-bonds',
+    name: 'AllBonds',
+    component: AllBonds,
+    meta: { requiresAuth: false }
   },
   {
     path: '/sign-in',
