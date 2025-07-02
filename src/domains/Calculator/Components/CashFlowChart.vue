@@ -25,11 +25,19 @@ const props = defineProps({
   }
 });
 
+console.log('CashFlowChart props:', props.cashFlows, props.currency);
+
 const chartRef = ref(null);
 let chartInstance = null;
 
 const createChart = () => {
-  if (!chartRef.value) return;
+  if (!chartRef.value || !props.cashFlows || props.cashFlows.length === 0) {
+    console.log('No se puede crear el gráfico - datos faltantes:', {
+      hasChartRef: !!chartRef.value,
+      cashFlowsLength: props.cashFlows?.length || 0
+    });
+    return;
+  }
 
   if (chartInstance) {
     chartInstance.destroy();
@@ -37,6 +45,8 @@ const createChart = () => {
 
   const ctx = chartRef.value.getContext('2d');
   if (!ctx) return;
+
+  console.log('Creando gráfico con', props.cashFlows.length, 'períodos');
 
   const periods = props.cashFlows.map(flow => `Periodo ${flow.period}`);
   const interestPayments = props.cashFlows.map(flow => flow.interestPayment);
@@ -132,13 +142,17 @@ const createChart = () => {
       },
     },
   });
+
+  console.log('Gráfico creado exitosamente');
 };
 
 onMounted(() => {
+  console.log('CashFlowChart mounted, creando gráfico...');
   createChart();
 });
 
-watch(() => props.cashFlows, () => {
+watch(() => props.cashFlows, (newCashFlows) => {
+  console.log('CashFlows cambiaron, recreando gráfico con', newCashFlows?.length || 0, 'elementos');
   createChart();
 }, { deep: true });
 </script>

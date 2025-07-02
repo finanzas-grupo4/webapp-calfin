@@ -11,6 +11,7 @@ import { createPinia } from 'pinia'
 import { faHome, faSearch, faHeart, faUser, faBars, faChartBar, faDollarSign, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 library.add(faHome, faSearch, faHeart, faUser, faBars, faChartBar, faDollarSign, faSignOutAlt)
 import Checkbox from 'primevue/checkbox';
+import { useAuthenticationStore } from './domains/IAM/services/authentication.store.js';
 
 
 
@@ -32,8 +33,14 @@ import Calendar from 'primevue/calendar'
 
 const app = createApp(App)
 
-const pinia = createPinia()
-app.use(pinia)
+const pinia = createPinia();
+app.use(pinia);
+
+// Inicializar autenticación desde localStorage
+const authStore = useAuthenticationStore();
+authStore.initialize();
+
+
 
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
