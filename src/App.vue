@@ -5,8 +5,20 @@
 import HeaderNav from './shared/components/HeaderNav.vue';
 import { ref, computed, onMounted } from 'vue';
 import { useAuthenticationStore } from '@/domains/IAM/services/authentication.store.js';
+import { useRoute } from 'vue-router';
 
 const authStore = useAuthenticationStore();
+const route = useRoute();
+
+
+// Verificar si estamos en la página de bonos públicos
+const isPublicBondsPage = computed(() => route.path === '/all-bonds');
+
+// Solo mostrar el header en páginas autenticadas y que no sean la de bonos
+const showHeader = computed(() =>
+    authStore.isSignedIn && !isPublicBondsPage.value
+);
+
 const isAuthenticated = computed(() => authStore.isSignedIn);
 
 const isDarkMode = ref(false);
@@ -47,8 +59,8 @@ onMounted(() => {
 
 <template>
   <div class="app-container">
-    <HeaderNav v-if="isAuthenticated" />
-    <main class="main-content" :class="{ 'no-header': !isAuthenticated }">
+    <HeaderNav v-if="showHeader" />
+    <main class="main-content" :class="{ 'no-header': !showHeader }">
       <router-view />
     </main>
   </div>

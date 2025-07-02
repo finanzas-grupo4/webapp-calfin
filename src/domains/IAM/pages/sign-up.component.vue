@@ -79,12 +79,70 @@ export default {
         <Button class="btn-register" type="submit">Registrarse</Button>
       </div>
       <small v-if="errorMessage" class="p-error block mt-2">{{ errorMessage }}</small>
+      <!-- Botón para visualizar bonos -->
+      <div class="view-bonds-container">
+        <p class="separator-text">o</p>
+        <router-link to="/all-bonds" class="view-bonds-button">
+          Visualizar los bonos actuales
+        </router-link>
+      </div>
     </form>
     <Toast />
+
   </div>
 </template>
 
 <style scoped>
+.view-bonds-container {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.separator-text {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.75rem;
+  position: relative;
+}
+
+.separator-text::before,
+.separator-text::after {
+  content: "";
+  display: inline-block;
+  height: 1px;
+  position: relative;
+  vertical-align: middle;
+  width: 30%;
+  background-color: #e0e0e0;
+}
+
+.separator-text::before {
+  right: 0.5em;
+  margin-left: -50%;
+}
+
+.separator-text::after {
+  left: 0.5em;
+  margin-right: -50%;
+}
+
+.view-bonds-button {
+  display: inline-block;
+  background-color: #DEF5FA;
+  color: #16444E;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border-radius: 2em;  /* Cambio a border-radius más grande para forma ovalada */
+  text-decoration: none;
+  border: 2px solid #16444E;
+  transition: all 0.3s ease;
+  min-width: 180px;
+}
+
+.view-bonds-button:hover {
+  background-color: #16444E;
+  color: #DEF5FA;
+}
 .container {
   max-width: 450px;
   margin: 2rem auto;
