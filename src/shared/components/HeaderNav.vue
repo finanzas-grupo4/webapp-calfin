@@ -52,6 +52,11 @@ onMounted(() => {
 <template>
   <header class="header-nav">
     <nav class="nav-container">
+      <div class="logo-container">
+        <router-link to="/">
+          <img src="@/assets/calfin.png" alt="CalFin Logo" class="nav-logo" />
+        </router-link>
+      </div>
       <div class="mobile-menu-toggle" @click="toggleMobileMenu">
         <font-awesome-icon icon="bars" />
       </div>
@@ -303,6 +308,23 @@ input:checked + .slider:before {
     width: 100%;
     border-top: 1px solid rgba(255,255,255,0.2);
     padding-top: 10px;
+  }
+}
+/* Estilos para el logo */
+.logo-container {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.nav-logo {
+  height: 40px;
+  width: auto;
+}
+
+@media (max-width: 768px) {
+  .nav-logo {
+    height: 30px;
   }
 }
 </style>

@@ -51,12 +51,6 @@ onMounted(() => {
     <main class="main-content" :class="{ 'no-header': !isAuthenticated }">
       <router-view />
     </main>
-    <button
-        @click="toggleDarkMode"
-        class="fixed bottom-4 right-4 px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 z-50"
-    >
-      {{ isDarkMode ? 'Modo Claro' : 'Modo Oscuro' }}
-    </button>
   </div>
 </template>
 
