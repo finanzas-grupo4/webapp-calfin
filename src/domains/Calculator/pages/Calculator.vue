@@ -1,8 +1,7 @@
-# Solución para evitar superposición del navbar en Calculator.vue
+<script setup>
+import BondAnalyzer from '../Components/BondAnalyzer.vue';
+</script>
 
-Considerando que estás utilizando Tailwind CSS en Calculator.vue y tienes un video de fondo, aquí tienes la solución completa para copiar y pegar:
-
-```vue
 <template>
   <!-- Video de fondo -->
   <div class="video-background">
@@ -23,9 +22,7 @@ Considerando que estás utilizando Tailwind CSS en Calculator.vue y tienes un vi
   </main>
 </template>
 
-<script setup>
-import BondAnalyzer from '../Components/BondAnalyzer.vue';
-</script>
+
 
 <style scoped>
 .video-background {
@@ -64,6 +61,3 @@ main {
   margin-top: 0; /* Elimina el margen si existiera y usa padding en su lugar */
 }
 </style>
-```
-
-Si necesitas ajustar la altura del padding, cambia el valor `pt-[60px]` por el que corresponda a la altura de tu navbar.

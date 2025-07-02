@@ -19,4 +19,10 @@ http.interceptors.request.use(
 );
 
 
+http.interceptors.request.use(
+    authenticationInterceptor,
+    error => Promise.reject(error)
+);
+
+
 export default http;

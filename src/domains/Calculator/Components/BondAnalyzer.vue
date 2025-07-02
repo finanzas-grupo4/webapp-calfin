@@ -1,3 +1,127 @@
+<script setup>
+import {ref} from 'vue';
+import BondInputForm from './BondInputForm.vue';
+import CashFlowTable from './CashFlowTable.vue';
+import CashFlowChart from './CashFlowChart.vue';
+import BondSummary from './BondSummary.vue';
+import {calculateBondCashFlow, calculateBondPrice} from '../lib/BondCalculations.js';
+import calculatorService from '../services/calculator.services.js';
+import { useToast } from "primevue/usetoast";
+
+const bond = ref(null);
+const cashFlows = ref([]);
+const bondPrice = ref(null);
+const activeTab = ref('table');
+const toast = useToast();
+const loading = ref(false);
+
+const handleBondSubmit = async (bondData) => {
+  console.log('Datos de bono recibidos en BondAnalyzer:', bondData);
+
+  // Crear copia modificada con valores correctos para el backend
+  const modifiedBondData = {
+    ...bondData,
+    // TermUnits: Debe ser en MAYÚSCULAS (YEARS, MONTHS)
+    termUnit: bondData.termUnit?.toUpperCase(),
+
+    // Mapeo de valores de frecuencia de pago
+    paymentFrequency: mapPaymentFrequency(bondData.paymentFrequency),
+
+    // Mapeo de valores de frecuencia de capitalización
+    compoundingFrequency: mapCompoundingFrequency(bondData.compoundingFrequency),
+
+    // GracePeriodType: Primera letra mayúscula (Total, Parcial, None)
+    gracePeriodType: mapGracePeriodType(bondData.gracePeriodType)
+
+    // Currency ya está en mayúscula en el frontend (USD, EUR, etc)
+  };
+
+  console.log('Datos de bono modificados para el backend:', modifiedBondData);
+  bond.value = modifiedBondData;
+
+  const flows = calculateBondCashFlow(modifiedBondData);
+  cashFlows.value = flows;
+
+  if (modifiedBondData.discountRate) {
+    bondPrice.value = calculateBondPrice(flows, modifiedBondData.discountRate);
+  } else {
+    bondPrice.value = null;
+  }
+
+  // Guardar en el backend con los datos modificados
+  loading.value = true;
+  try {
+    console.log('Intentando guardar bono en el backend...');
+    const result = await calculatorService.createBond({
+      ...modifiedBondData, // Usar modifiedBondData en lugar de bondData
+      price: bondPrice.value,
+      cashFlows: flows
+    });
+
+    if (result.success) {
+      console.log('Bono guardado exitosamente:', result.data);
+      toast.add({
+        severity: 'success',
+        summary: 'Éxito',
+        detail: 'Bono agregado correctamente',
+        life: 3000
+      });
+    } else {
+      console.error('Error al guardar bono:', result.message);
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: result.message,
+        life: 5000
+      });
+    }
+  } catch (error) {
+    console.error('Excepción al guardar bono:', error);
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Error inesperado al guardar el bono',
+      life: 5000
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Funciones para mapear valores del frontend al backend
+function mapPaymentFrequency(value) {
+  const map = {
+    'monthly': 'MENSUAL',
+    'quarterly': 'TRIMESTRAL',
+    'semi-annual': 'SEMESTRAL',
+    'annual': 'ANUAL'
+  };
+  return map[value] || value;
+}
+
+function mapCompoundingFrequency(value) {
+  const map = {
+    'monthly': 'MENSUAL',
+    'quarterly': 'TRIMESTRAL',
+    'semi-annual': 'SEMESTRAL',
+    'annual': 'ANUAL',
+    'continuous': 'CONTINUO',
+    'none': 'NONE'
+  };
+  return map[value] || value;
+}
+
+function mapGracePeriodType(value) {
+  const map = {
+    'partial': 'PARCIAL',
+    'total': 'TOTAL',
+    'none': 'NONE'
+  };
+  return map[value] || value;
+}
+</script>
+
+
 <template>
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
     <div class="lg:col-span-4">
@@ -54,28 +178,4 @@
 </template>
 
 
-<script setup>
-import {ref} from 'vue';
-import BondInputForm from './BondInputForm.vue';
-import CashFlowTable from './CashFlowTable.vue';
-import CashFlowChart from './CashFlowChart.vue';
-import BondSummary from './BondSummary.vue';
-import {calculateBondCashFlow, calculateBondPrice} from '../lib/BondCalculations.js';
 
-const bond = ref(null);
-const cashFlows = ref([]);
-const bondPrice = ref(null);
-const activeTab = ref('table');
-
-const handleBondSubmit = (bondData) => {
-  bond.value = bondData;
-  const flows = calculateBondCashFlow(bondData);
-  cashFlows.value = flows;
-
-  if (bondData.discountRate) {
-    bondPrice.value = calculateBondPrice(flows, bondData.discountRate);
-  } else {
-    bondPrice.value = null;
-  }
-};
-</script>

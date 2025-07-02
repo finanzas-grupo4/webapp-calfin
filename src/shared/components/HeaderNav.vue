@@ -91,7 +91,7 @@ onMounted(() => {
 
 <style scoped>
 .header-nav {
-  background-color: #765532;
+  background-color: #16444E;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
@@ -131,7 +131,7 @@ onMounted(() => {
 }
 
 .nav-item a:hover {
-  color: #A88662;
+  color: #DEF5FA;
 }
 
 .nav-item.dark-mode {
@@ -172,7 +172,7 @@ span {
     top: 60px;
     left: 0;
     right: 0;
-    background-color: #765532;
+    background-color: #16444E;
     flex-direction: column;
     gap: 15px;
     padding: 20px;
@@ -253,7 +253,7 @@ span {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #A88662;
+  background-color: #1d5561;
   transition: .4s;
   display: flex;
   align-items: center;
@@ -274,7 +274,7 @@ span {
 }
 
 input:checked + .slider {
-  background-color: #333;
+  background-color: #0c2429;
 }
 
 input:checked + .slider:before {

@@ -9,10 +9,27 @@ export const useAuthenticationStore = defineStore("authentication", {
         isSignedIn: false,
         roles: ["ROLE_USER"]
     }),
+    getters: {
+        isInitialized: (state) => !!state.token,
+    },
     actions: {
+        initialize() {
+            const token = localStorage.getItem("token");
+            const username = localStorage.getItem("username");
+            if (token && username) {
+                this.token = token;
+                this.username = username;
+                this.isSignedIn = true;
+            }
+        },
         async signUp(signUpRequest, router, toast) {
             const service = new AuthenticationService();
-            const response = await service.signUp(signUpRequest);
+            // Asegura que el rol se envíe siempre como ROLE_USER
+            const requestWithRole = {
+                ...signUpRequest,
+                roles: ["ROLE_USER"]
+            };
+            const response = await service.signUp(requestWithRole);
             if (response && response.data) {
                 this.id = response.data.id;
                 this.username = response.data.username;
