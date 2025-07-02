@@ -1,9 +1,10 @@
 <!-- src/domains/PublicBonds/pages/AllBonds.vue -->
-
 <script setup>
 import { ref, onMounted, onBeforeMount } from 'vue';
 import BondCard from '../components/BondCard.vue';
 import publicBondsService from '../services/public-bonds.service.js';
+// Importar también el servicio de calculator que tiene el método correcto
+import calculatorService from '@/domains/Calculator/services/calculator.services.js';
 import { useToast } from 'primevue/usetoast';
 
 const bonds = ref([]);
@@ -28,20 +29,19 @@ const loadBonds = async () => {
   try {
     loading.value = true;
     console.log('Cargando bonos públicos...');
-    const response = await publicBondsService.getAllPublicBonds();
+
+    // Usar calculatorService en lugar de publicBondsService
+    const response = await calculatorService.getAllBonds();
 
     if (response.success) {
       bonds.value = response.data;
-      console.log('Información de depuración:');
-      console.log(`Bonds cargados: ${bonds.value.length}`);
-      if (bonds.value.length > 0) {
-        console.log(JSON.stringify(bonds.value[0], null, 2));
-      }
+      console.log('Bonds cargados:', bonds.value.length);
+      console.log(bonds.value[0]); // Mostrar el primer bono para depuración
     } else {
       toast.add({
         severity: 'error',
         summary: 'Error',
-        detail: response.message || 'No se pudieron cargar los bonos',
+        detail: response.message || 'Error al cargar los bonos',
         life: 5000
       });
     }
@@ -50,7 +50,7 @@ const loadBonds = async () => {
     toast.add({
       severity: 'error',
       summary: 'Error',
-      detail: 'Ocurrió un error inesperado',
+      detail: 'Error inesperado al cargar los bonos',
       life: 5000
     });
   } finally {
@@ -101,7 +101,7 @@ const loadBonds = async () => {
         </div>
 
         <div class="bonds-counter">
-          <p>Se han cargado <strong>{{ bonds.length }}</strong> bonos</p>
+          <p>Bonos: <strong>{{ bonds.length }}</strong></p>
         </div>
       </div>
 
@@ -150,33 +150,36 @@ const loadBonds = async () => {
   gap: 15px;
 }
 
+  /* Modifica estos estilos en AllBonds.vue */
   .auth-button {
     font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
+    padding: 0.75rem 2rem; /* Padding más amplio como el botón de visualizar */
+    border-radius: 2em; /* Forma ovalada más pronunciada */
+    text-decoration: none;
+    transition: all 0.3s ease;
+    min-width: 120px; /* Ancho mínimo para mantener consistencia */
+    text-align: center;
+  }
 
   .auth-button.login {
-  color: #16444E;
-  background-color: transparent;
-  border: 1.5px solid #16444E;
-}
+    color: #16444E;
+    background-color: transparent;
+    border: 1.5px solid #16444E;
+  }
 
   .auth-button.login:hover {
     background-color: #16444E;
-  color: #DEF5FA;
-}
+    color: #DEF5FA;
+  }
 
   .auth-button.signup {
-  color: #DEF5FA;
-  background-color: #16444E;
-}
+    color: #DEF5FA;
+    background-color: #16444E;
+  }
 
   .auth-button.signup:hover {
     background-color: #0f2f38;
-}
+  }
 
 /* Estilos para el video de fondo - corregidos para pantalla completa */
 .video-background {
