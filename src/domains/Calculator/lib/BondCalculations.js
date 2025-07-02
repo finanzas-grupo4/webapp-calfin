@@ -163,3 +163,47 @@ export function calculateBondPrice(cashFlows, discountRate) {
 
     return presentValue
 }
+
+// Calcular VAN
+export function calcularVAN(flujos, tasaDescuento) {
+    if (!flujos || flujos.length === 0) return 0;
+    let van = 0;
+    for (let i = 0; i < flujos.length; i++) {
+        const flujo = flujos[i];
+        // El flujo neto es el pago total negativo (egreso) excepto el último que puede ser ingreso
+        const neto = (flujo.totalPayment * -1) + (i === flujos.length - 1 ? flujo.endingBalance : 0);
+        van += neto / Math.pow(1 + tasaDescuento, i + 1);
+    }
+    return van;
+}
+
+// Calcular TIR (método de Newton-Raphson)
+export function calcularTIR(flujos) {
+    if (!flujos || flujos.length === 0) return NaN;
+    const maxIter = 100;
+    const precision = 1e-7;
+    let tir = 0.1; // 10% inicial
+    let lastTir = tir;
+    for (let iter = 0; iter < maxIter; iter++) {
+        let f = 0;
+        let df = 0;
+        for (let i = 0; i < flujos.length; i++) {
+            const flujo = (flujos[i].totalPayment * -1) + (i === flujos.length - 1 ? flujos[i].endingBalance : 0);
+            f += flujo / Math.pow(1 + tir, i + 1);
+            df += -((i + 1) * flujo) / Math.pow(1 + tir, i + 2);
+        }
+        if (Math.abs(df) < 1e-12) return NaN; // Evitar división por cero
+        const tirNueva = tir - f / df;
+        if (!isFinite(tirNueva)) return NaN;
+        if (Math.abs(tirNueva - tir) < precision) return tirNueva;
+        lastTir = tir;
+        tir = tirNueva;
+    }
+    return NaN; // Si no converge, no hay solución
+}
+
+// Calcular TREA (TIR anualizada)
+export function calcularTREA(tir, frecuenciaPagos) {
+    const pagosPorAnio = getPaymentsPerYear(frecuenciaPagos);
+    return Math.pow(1 + tir, pagosPorAnio) - 1;
+}

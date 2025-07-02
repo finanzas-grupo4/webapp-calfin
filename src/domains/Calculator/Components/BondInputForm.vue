@@ -359,11 +359,31 @@ const validateForm = () => {
 const submitForm = () => {
   if (!validateForm()) return;
 
+  // Mapeo de valores para el backend
+  const mapTermUnit = {
+    'years': 'YEARS',
+    'months': 'MONTHS'
+  };
+  const mapFrequency = {
+    'monthly': 'MENSUAL',
+    'quarterly': 'TRIMESTRAL',
+    'semi-annual': 'SEMESTRAL',
+    'annual': 'ANUAL',
+    'continuous': 'CONTINUO'
+  };
+  const mapGraceType = {
+    'partial': 'PARCIAL',
+    'total': 'TOTAL',
+    'none': 'NINGUNO'
+  };
+
   const bondData = {
     ...formData,
-    issueDate: new Date(formData.issueDate),
-    // Convert to months for consistency in calculations
-    termInMonths: formData.termUnit === 'years' ? formData.term * 12 : formData.term,
+    termUnit: mapTermUnit[formData.termUnit] || formData.termUnit,
+    paymentFrequency: mapFrequency[formData.paymentFrequency] || formData.paymentFrequency,
+    compoundingFrequency: formData.isEffectiveRate ? undefined : (mapFrequency[formData.compoundingFrequency] || formData.compoundingFrequency),
+    gracePeriodType: mapGraceType[formData.gracePeriodType] || formData.gracePeriodType,
+    issueDate: formData.issueDate, // ya está en formato YYYY-MM-DD
   };
 
   emit('submit', bondData);

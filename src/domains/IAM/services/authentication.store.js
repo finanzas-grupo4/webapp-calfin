@@ -48,6 +48,11 @@ export const useAuthenticationStore = defineStore("authentication", {
                 this.isSignedIn = true;
                 localStorage.setItem("token", this.token);
                 localStorage.setItem("username", this.username);
+                localStorage.setItem("userId", this.id.toString());
+                console.log('✅ Usuario autenticado y datos guardados en localStorage:', {
+                    id: this.id,
+                    username: this.username
+                });
                 toast.add({ severity: "success", summary: "Inicio de sesión exitoso", life: 2000 });
                 router.push({ name: "Home" });
             }
@@ -59,6 +64,8 @@ export const useAuthenticationStore = defineStore("authentication", {
             this.isSignedIn = false;
             localStorage.removeItem("token");
             localStorage.removeItem("username");
+            localStorage.removeItem("userId");
+            console.log('🚪 Usuario desautenticado y datos eliminados de localStorage');
             router.push({ name: "sign-in" });
         }
     }

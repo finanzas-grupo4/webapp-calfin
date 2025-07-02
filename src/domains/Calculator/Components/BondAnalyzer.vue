@@ -125,8 +125,45 @@ function mapGracePeriodType(value) {
 <template>
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
     <div class="lg:col-span-4">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow mb-6">
         <BondInputForm @submit="handleBondSubmit" />
+      </div>
+
+      <!-- Lista de bonos guardados -->
+      <div v-if="bonds.length > 0" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          Bonos Guardados ({{ bonds.length }})
+        </h3>
+        <div class="space-y-2">
+          <div
+            v-for="(savedBond, index) in bonds"
+            :key="index"
+            @click="selectBond(savedBond)"
+            :class="[
+              'p-3 rounded-md cursor-pointer transition-colors',
+              bond && bond === savedBond
+                ? 'bg-blue-100 dark:bg-blue-900 border-2 border-blue-500'
+                : 'bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600'
+            ]"
+          >
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-medium text-gray-900 dark:text-white">
+                  {{ savedBond.name || 'Bono ' + (index + 1) }}
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Valor: {{ formatCurrency(savedBond.nominalValue, savedBond.currency) }}
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Tasa: {{ savedBond.interestRate }}%
+                </p>
+              </div>
+              <div class="text-xs text-gray-400">
+                {{ formatDate(savedBond.issueDate) }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -162,6 +199,13 @@ function mapGracePeriodType(value) {
             </nav>
           </div>
           <div class="p-6">
+            <!-- Debug: mostrar información de los datos -->
+            <div v-if="bond" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900 rounded">
+              <p class="text-sm text-blue-700 dark:text-blue-300">
+                Debug: Bond: {{ bond.name }}, CashFlows: {{ cashFlows.length }} períodos, Moneda: {{ bond.currency }}
+              </p>
+            </div>
+
             <CashFlowTable v-if="activeTab === 'table'" :cash-flows="cashFlows" :currency="bond.currency" />
             <CashFlowChart v-else :cash-flows="cashFlows" :currency="bond.currency" />
           </div>
@@ -170,12 +214,13 @@ function mapGracePeriodType(value) {
       <div v-else class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex items-center justify-center min-h-[400px]">
         <div class="text-center text-gray-500 dark:text-gray-400">
           <h3 class="text-xl font-medium mb-2">No hay datos sobre bonos</h3>
-          <p>Sin datos de bonosIntroduzca los parámetros de los bonos para generar proyecciones de flujo de caja</p>
+          <p>{{ bonds.length > 0 ? 'Selecciona un bono de la lista o' : 'Sin datos de bonos.' }} Introduzca los parámetros de los bonos para generar proyecciones de flujo de caja</p>
+          <!-- Debug info -->
+          <div class="mt-4 text-xs">
+            <p>Debug: Bond: {{ bond ? 'Existe' : 'Null' }}, CashFlows: {{ cashFlows.length }}, Bonds: {{ bonds.length }}</p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-
-
