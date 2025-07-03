@@ -1,7 +1,7 @@
 import { addMonths } from "date-fns"
 
 // Helper function to get the number of payments per year
-function getPaymentsPerYear(frequency) {
+export function getPaymentsPerYear(frequency) {
     switch (frequency) {
         case "monthly":
             return 12
@@ -70,94 +70,134 @@ function calculatePaymentAmount(principal, periodicRate, numberOfPayments) {
     return (principal * periodicRate) / (1 - Math.pow(1 + periodicRate, -numberOfPayments))
 }
 
-// Calculate the bond cash flow
+// Calculate the bond cash flow using American (Bullet) Method
 export function calculateBondCashFlow(bond) {
-    const paymentsPerYear = getPaymentsPerYear(bond.paymentFrequency)
-    const periodicRate = getPeriodicRate(bond)
+    console.log('Calculando flujo de caja con MÉTODO AMERICANO (BULLET) para:', bond);
 
-    // Calculate total number of payments
-    const totalPayments = Math.ceil(bond.termInMonths / (12 / paymentsPerYear))
+    // 1. Validar datos de entrada críticos
+    if (!bond.nominalValue || !bond.interestRate || !bond.termInMonths) {
+        console.error('Datos del bono incompletos para el cálculo:', bond);
+        return [];
+    }
 
-    // Calculate payment interval in months
-    const paymentIntervalMonths = 12 / paymentsPerYear
+    // 2. Calcular la tasa de interés periódica efectiva (i_m)
+    const periodicRate = getPeriodicRate(bond);
+    console.log('Tasa periódica efectiva (i_m):', periodicRate);
 
+    // 3. Calcular el número total de pagos
+    const paymentsPerYear = getPaymentsPerYear(bond.paymentFrequency);
+    const totalPayments = Math.ceil(bond.termInMonths / (12 / paymentsPerYear));
+    console.log('Total de pagos (n):', totalPayments);
 
-    const gracePeriodPayments = bond.hasGracePeriod ? bond.gracePeriodLength : 0
+    // 4. Definir valores para el método americano
+    const principal = parseFloat(bond.nominalValue);
+    const periodicInterestPayment = principal * periodicRate;
+    console.log('Pago de interés periódico (Cupón):', periodicInterestPayment);
 
-    // Calculate regular payment amount (after grace period)
-    const remainingPayments = totalPayments - gracePeriodPayments
-    const paymentAmount = calculatePaymentAmount(bond.nominalValue, periodicRate, remainingPayments)
+    const cashFlows = [];
+    let currentDate = new Date(bond.issueDate || new Date());
+    const paymentIntervalMonths = 12 / paymentsPerYear;
 
-    const cashFlows = []
-    let balance = bond.nominalValue
-    let currentDate = new Date(bond.issueDate)
-
+    // 5. Iterar para generar cada período del flujo de caja
     for (let period = 1; period <= totalPayments; period++) {
-        // Add months to the date based on payment frequency
-        currentDate = addMonths(currentDate, paymentIntervalMonths)
+        currentDate = addMonths(currentDate, paymentIntervalMonths);
 
-        // Calculate interest for this period
-        const interestPayment = balance * periodicRate
+        let interestPayment = periodicInterestPayment;
+        let principalPayment = 0;
 
-        let principalPayment = 0
-        let totalPayment = 0
-
-        // Handle grace period
-        if (period <= gracePeriodPayments) {
-            if (bond.gracePeriodType === "total") {
-                // Total grace period: no payments
-                principalPayment = 0
-                totalPayment = 0
-            } else {
-                // Partial grace period: only interest payments
-                principalPayment = 0
-                totalPayment = interestPayment
-            }
-        } else {
-            // Regular payment period
-            totalPayment = paymentAmount
-            principalPayment = totalPayment - interestPayment
-
-            // Handle last payment rounding issues
-            if (balance - principalPayment < 0.01) {
-                principalPayment = balance
-                totalPayment = principalPayment + interestPayment
-            }
+        // En el último período, se paga el capital completo
+        if (period === totalPayments) {
+            principalPayment = principal; // Amortización total al vencimiento
         }
 
-        // Update balance
-        const endingBalance = Math.max(0, balance - principalPayment)
+        const totalPayment = interestPayment + principalPayment;
+        const beginningBalance = principal; // El saldo es siempre el nominal hasta el final
+        const endingBalance = (period === totalPayments) ? 0 : principal;
 
         cashFlows.push({
             period,
             date: new Date(currentDate),
-            beginningBalance: balance,
-            interestPayment,
-            principalPayment,
-            totalPayment,
-            endingBalance,
-        })
-
-        balance = endingBalance
-
-        // Break if balance is zero
-        if (balance === 0) break
+            beginningBalance: beginningBalance,
+            interestPayment: interestPayment,
+            principalPayment: principalPayment,
+            totalPayment: totalPayment,
+            endingBalance: endingBalance,
+        });
     }
 
-    return cashFlows
+    console.log('Flujos de caja (Método Americano) generados:', cashFlows);
+    return cashFlows;
 }
 
+// IRR calculation using Newton's method for TCEA
+function irr(flows, guess = 0.05, maxIter = 100, tolerance = 1e-7) {
+    let x0 = guess;
+    for (let i = 0; i < maxIter; i++) {
+        let npv = 0;
+        let dnpv = 0; // Derivative of NPV
+
+        for (let t = 0; t < flows.length; t++) {
+            npv += flows[t] / Math.pow(1 + x0, t);
+            if (t > 0) {
+                dnpv += -t * flows[t] / Math.pow(1 + x0, t + 1);
+            }
+        }
+
+        if (dnpv === 0) { return null; }
+        const x1 = x0 - npv / dnpv;
+        if (Math.abs(x1 - x0) <= tolerance) {
+            return x1; // Converged
+        }
+        x0 = x1;
+    }
+    return null; // Failed to converge
+}
+
+// Calculate TCEA (Effective Annual Cost Rate) from cash flows
+export function calculateTCEA(cashFlows, initialInvestment, paymentsPerYear) {
+    if (!initialInvestment || initialInvestment <= 0) return 0;
+    const flows = [-initialInvestment, ...cashFlows.map(cf => cf.totalPayment)];
+    const periodicIRR = irr(flows);
+    if (periodicIRR === null) return 0;
+    return Math.pow(1 + periodicIRR, paymentsPerYear) - 1;
+}
+
+// Calculate Macaulay Duration
+export function calculateMacaulayDuration(cashFlows, bondPrice, periodicDiscountRate, paymentsPerYear) {
+    if (!bondPrice || bondPrice === 0) return 0;
+    let weightedTime = 0;
+    cashFlows.forEach((flow) => {
+        const period = flow.period;
+        const pv_cf = flow.totalPayment / Math.pow(1 + periodicDiscountRate, period);
+        weightedTime += period * pv_cf;
+    });
+    return (weightedTime / bondPrice) / paymentsPerYear; // Return in years
+}
+
+// Calculate Convexity
+export function calculateConvexity(cashFlows, bondPrice, periodicDiscountRate, paymentsPerYear) {
+    if (!bondPrice || bondPrice === 0) return 0;
+    let convexityTerm = 0;
+    cashFlows.forEach((flow) => {
+        const t = flow.period;
+        const pv_cf = flow.totalPayment / Math.pow(1 + periodicDiscountRate, t);
+        convexityTerm += pv_cf * t * (t + 1);
+    });
+    return convexityTerm / (bondPrice * Math.pow(1 + periodicDiscountRate, 2) * Math.pow(paymentsPerYear, 2));
+}
+
+
 // Calculate the present value of the bond
-export function calculateBondPrice(cashFlows, discountRate) {
+export function calculateBondPrice(cashFlows, discountRate, paymentsPerYear) {
     if (!discountRate) return 0
 
-    const periodicDiscountRate = discountRate / 100 / getPaymentsPerYear("semi-annual")
+    const ppy = paymentsPerYear || 12; // Fallback to monthly
+    const periodicDiscountRate = discountRate / 100 / ppy;
 
     let presentValue = 0
 
-    cashFlows.forEach((flow, index) => {
-        const periodNumber = index + 1
-        const discountFactor = Math.pow(1 + periodicDiscountRate, -periodNumber)
+    cashFlows.forEach((flow) => {
+        const discountFactor = Math.pow(1 + periodicDiscountRate, -flow.period)
         presentValue += flow.totalPayment * discountFactor
     })
 
