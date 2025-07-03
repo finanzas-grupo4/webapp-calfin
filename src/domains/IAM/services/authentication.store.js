@@ -16,8 +16,10 @@ export const useAuthenticationStore = defineStore("authentication", {
         initialize() {
             const token = localStorage.getItem("token");
             const username = localStorage.getItem("username");
+            const id = localStorage.getItem("userId");
             if (token && username) {
                 this.token = token;
+                this.id = Number(id);
                 this.username = username;
                 this.isSignedIn = true;
             }
@@ -48,6 +50,7 @@ export const useAuthenticationStore = defineStore("authentication", {
                 this.isSignedIn = true;
                 localStorage.setItem("token", this.token);
                 localStorage.setItem("username", this.username);
+                localStorage.setItem("userId", this.id);
                 toast.add({ severity: "success", summary: "Inicio de sesión exitoso", life: 2000 });
                 router.push({ name: "Home" });
             }

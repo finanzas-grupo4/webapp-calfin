@@ -1,6 +1,5 @@
 <template>
   <div class="home-container">
-
     <div class="button-container">
       <button @click="goToCalculator('emisor')">EMISOR DE BONO</button>
       <button @click="goToCalculator('inversor')">INVERSOR Y BONISTA</button>
@@ -21,16 +20,16 @@ const goToCalculator = (role) => {
 .home-container {
   text-align: center;
   margin-top: 100px;
-}
-
-hr {
-  width: 90%;
-  margin: 20px auto;
+  background-color: #ffffff;
+  min-height: calc(100vh - 60px); /* espacio si hay navbar fija */
+  padding: 2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .button-container {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 50px;
   margin-top: 40px;
 }
@@ -43,7 +42,8 @@ button {
   font-weight: bold;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  color: #0b2e34;
 }
 
 button:hover {
@@ -51,6 +51,20 @@ button:hover {
 }
 
 .page-container {
-  margin-top: 60px; /* Ajusta según la altura de tu navbar */
+  margin-top: 60px;
+}
+
+:root.dark .home-container {
+  background-color: #2c2c2c;
+  color: #f5f5f5;
+}
+
+:root.dark .button-container button {
+  background-color: #447e8c;
+  color: #ffffff;
+}
+
+:root.dark .button-container button:hover {
+  background-color: #3a6f7b;
 }
 </style>

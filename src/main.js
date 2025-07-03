@@ -11,9 +11,6 @@ import { createPinia } from 'pinia'
 import { faHome, faSearch, faHeart, faUser, faBars, faChartBar, faDollarSign, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 library.add(faHome, faSearch, faHeart, faUser, faBars, faChartBar, faDollarSign, faSignOutAlt)
 import Checkbox from 'primevue/checkbox';
-
-
-
 import 'primevue/resources/themes/lara-light-indigo/theme.css'
 import 'primevue/resources/primevue.min.css'
 import 'primeicons/primeicons.css'
@@ -39,7 +36,7 @@ app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
 app.use(PrimeVue)
 app.use(ToastService)
-
+app.component('font-awesome-icon', FontAwesomeIcon);
 
 
 app.component('Button', Button)

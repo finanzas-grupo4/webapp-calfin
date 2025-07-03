@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthenticationStore } from '@/domains/IAM/services/authentication.store.js';
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const router = useRouter();
 const authStore = useAuthenticationStore();
@@ -66,6 +67,13 @@ onMounted(() => {
           <router-link to="/">
             <font-awesome-icon icon="home" />
             <span>Inicio</span>
+          </router-link>
+        </div>
+
+        <div class="nav-item profile" @click="closeMobileMenu">
+          <router-link to="/profile">
+            <font-awesome-icon icon="user" />
+            <span>Mi Cuenta</span>
           </router-link>
         </div>
 
