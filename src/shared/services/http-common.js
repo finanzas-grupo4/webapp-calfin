@@ -1,10 +1,14 @@
 import axios from 'axios';
 import {authenticationInterceptor} from "@/domains/IAM/services/authentication.interceptor.js";
 
-const API_BASE_URL = 'https://calfinapp.azurewebsites.net';
+// Usar URL absoluta en producción
+const isProduction = import.meta.env.PROD;
+const baseURL = isProduction
+    ? 'https://calfinapp.azurewebsites.net/api/v1'
+    : import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 const http = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+    baseURL: baseURL,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
